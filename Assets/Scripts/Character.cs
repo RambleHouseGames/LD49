@@ -111,18 +111,6 @@ public class Character : MonoBehaviour
             newShuriken.GoLeft = false;
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.collider.tag != "Shuriken")
-            GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.collider.tag != "Shuriken")
-            GlobalSignalManager.Inst.FireSignal(new CharacterLeftGroundSignal());
-    }
 }
 
 public abstract class CharacterState
