@@ -17,7 +17,7 @@ public class Character : MonoBehaviour
     private float moveSpeed = 1f;
 
     [SerializeField]
-    private Rigidbody2D RigidBody;
+    private Rigidbody2D rigidBody;
 
     [SerializeField]
     private BoxCollider2D GroundCollider;
@@ -51,17 +51,17 @@ public class Character : MonoBehaviour
 
     public void AccelerateByGravity()
     {
-        RigidBody.velocity = new Vector2(RigidBody.velocity.x, RigidBody.velocity.y - (gravity * Time.deltaTime));
+        rigidBody.velocity = new Vector2(rigidBody.velocity.x, rigidBody.velocity.y - (gravity * Time.deltaTime));
     }
 
     public void Jump()
     {
-        RigidBody.velocity = new Vector2(RigidBody.velocity.x, jumpVelocity);
+        rigidBody.velocity = new Vector2(rigidBody.velocity.x, jumpVelocity);
     }
 
     public void SetHorizontalVelocity(float input)
     {
-        RigidBody.velocity = new Vector2(moveSpeed * input, RigidBody.velocity.y);
+        rigidBody.velocity = new Vector2(moveSpeed * input, rigidBody.velocity.y);
         if (renderer.flipX && input > 0f)
             renderer.flipX = false;
         if (!renderer.flipX && input < 0f)
@@ -71,6 +71,12 @@ public class Character : MonoBehaviour
     public void TriggerAnimation(string animation)
     {
         animator.SetTrigger(animation);
+    }
+
+    public bool IsMovingHorizontally()
+    {
+        Debug.Log(rigidBody.velocity.x);
+        return Mathf.Abs(rigidBody.velocity.x) > .1f;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -118,6 +124,8 @@ public class StandState : CharacterState
         character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
         if (Input.GetButtonDown("Jump"))
             character.Jump();
+        if (nextState == this && character.IsMovingHorizontally())
+            nextState = new RunState(character);
 
         return nextState;
     }
@@ -162,6 +170,47 @@ public class FlyState : CharacterState
 
     private void onCharacterHitGround(GlobalSignal signal)
     {
-        nextState = new StandState(character);
+        if (character.IsMovingHorizontally())
+            nextState = new RunState(character);
+        else
+            nextState = new StandState(character);
     }
+}
+
+public class RunState : CharacterState
+{
+    private CharacterState nextState;
+
+    public RunState (Character character) : base (character)
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        character.TriggerAnimation("Run");
+        GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+
+    }
+
+    public override CharacterState Update()
+    {
+        if (Input.GetButtonDown("Jump"))
+            character.Jump();
+        character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
+        if (nextState == this && !character.IsMovingHorizontally())
+            nextState = new StandState(character);
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.RemoveListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+    }
+
+    private void onCharacterLeftGround(GlobalSignal signal)
+    {
+        nextState = new FlyState(character);
+    }
+
 }
