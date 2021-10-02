@@ -53,6 +53,11 @@ public class Character : MonoBehaviour
         RigidBody.velocity = new Vector2(RigidBody.velocity.x, jumpVelocity);
     }
 
+    public void SetHorizontalVelocity(float input)
+    {
+        RigidBody.velocity = new Vector2(moveSpeed * input, RigidBody.velocity.y);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
@@ -91,11 +96,12 @@ public class StandState : CharacterState
     {
         Debug.Log("STARTED STANDING");
         GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
-        GlobalSignalManager.Inst.AddListener<JumpButtonPressedSignal>(onJumpButtonPressed);
     }
 
     public override CharacterState Update()
     {
+        if (Input.GetButtonDown("Jump"))
+            character.Jump();
         return nextState;
     }
 
@@ -103,17 +109,11 @@ public class StandState : CharacterState
     {
         Debug.Log("FINISHED STANDING");
         GlobalSignalManager.Inst.RemoveListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
-        GlobalSignalManager.Inst.RemoveListener<JumpButtonPressedSignal>(onJumpButtonPressed);
     }
 
     private void onCharacterLeftGround(GlobalSignal signal)
     {
         nextState = new FlyState(character);
-    }
-
-    private void onJumpButtonPressed(GlobalSignal signal)
-    {
-        character.Jump();
     }
 }
 
@@ -134,6 +134,7 @@ public class FlyState : CharacterState
 
     public override CharacterState Update()
     {
+        character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
         character.AccelerateByGravity();
         return nextState;
     }
