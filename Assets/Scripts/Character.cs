@@ -23,6 +23,9 @@ public class Character : MonoBehaviour
     private BoxCollider2D GroundCollider;
 
     [SerializeField]
+    private SpriteRenderer renderer;
+
+    [SerializeField]
     private Animator animator;
 
     private CharacterState currentState;
@@ -59,6 +62,10 @@ public class Character : MonoBehaviour
     public void SetHorizontalVelocity(float input)
     {
         RigidBody.velocity = new Vector2(moveSpeed * input, RigidBody.velocity.y);
+        if (renderer.flipX && input > 0f)
+            renderer.flipX = false;
+        if (!renderer.flipX && input < 0f)
+            renderer.flipX = true;
     }
 
     public void TriggerAnimation(string animation)
@@ -108,8 +115,10 @@ public class StandState : CharacterState
 
     public override CharacterState Update()
     {
+        character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
         if (Input.GetButtonDown("Jump"))
             character.Jump();
+
         return nextState;
     }
 

@@ -384,6 +384,7 @@ MonoBehaviour:
   moveSpeed: 1
   RigidBody: {fileID: 832613352}
   GroundCollider: {fileID: 832613354}
+  renderer: {fileID: 832613350}
   animator: {fileID: 832613356}
 --- !u!95 &832613356
 Animator:
