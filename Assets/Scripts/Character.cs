@@ -1,0 +1,151 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Character : MonoBehaviour
+{
+    [SerializeField]
+    private float gravity = 1f;
+
+    [SerializeField]
+    private float terminalVelocity = 1f;
+
+    [SerializeField]
+    private float jumpVelocity = 2f;
+
+    [SerializeField]
+    private float moveSpeed = 1f;
+
+    [SerializeField]
+    private Rigidbody2D RigidBody;
+
+    [SerializeField]
+    private BoxCollider2D GroundCollider;
+
+    private CharacterState currentState;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        currentState = new FlyState(this);
+        currentState.Start();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        CharacterState nextState = currentState.Update();
+        if(nextState != currentState)
+        {
+            currentState.End();
+            currentState = nextState;
+            currentState.Start();
+        }
+    }
+
+    public void AccelerateByGravity()
+    {
+        RigidBody.velocity = new Vector2(RigidBody.velocity.x, RigidBody.velocity.y - (gravity * Time.deltaTime));
+    }
+
+    public void Jump()
+    {
+        RigidBody.velocity = new Vector2(RigidBody.velocity.x, jumpVelocity);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        GlobalSignalManager.Inst.FireSignal(new CharacterLeftGroundSignal());
+    }
+}
+
+public abstract class CharacterState
+{
+    protected Character character;
+
+    public CharacterState (Character character)
+    {
+        this.character = character;
+    }
+
+    public virtual void Start() { }
+    public virtual CharacterState Update() { return this; }
+    public virtual void End() { }
+}
+
+public class StandState : CharacterState
+{
+    private CharacterState nextState;
+
+    public StandState (Character character) : base (character)
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        Debug.Log("STARTED STANDING");
+        GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+        GlobalSignalManager.Inst.AddListener<JumpButtonPressedSignal>(onJumpButtonPressed);
+    }
+
+    public override CharacterState Update()
+    {
+        return nextState;
+    }
+
+    public override void End()
+    {
+        Debug.Log("FINISHED STANDING");
+        GlobalSignalManager.Inst.RemoveListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+        GlobalSignalManager.Inst.RemoveListener<JumpButtonPressedSignal>(onJumpButtonPressed);
+    }
+
+    private void onCharacterLeftGround(GlobalSignal signal)
+    {
+        nextState = new FlyState(character);
+    }
+
+    private void onJumpButtonPressed(GlobalSignal signal)
+    {
+        character.Jump();
+    }
+}
+
+public class FlyState : CharacterState
+{
+    private CharacterState nextState;
+
+    public FlyState (Character character) : base (character)
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        Debug.Log("STARTED FLYING");
+        GlobalSignalManager.Inst.AddListener<CharacterHitGroundSignal>(onCharacterHitGround);
+    }
+
+    public override CharacterState Update()
+    {
+        character.AccelerateByGravity();
+        return nextState;
+    }
+
+    public override void End()
+    {
+        Debug.Log("FINISHED FLYING");
+        GlobalSignalManager.Inst.RemoveListener<CharacterHitGroundSignal>(onCharacterHitGround);
+    }
+
+    private void onCharacterHitGround(GlobalSignal signal)
+    {
+        nextState = new StandState(character);
+    }
+}

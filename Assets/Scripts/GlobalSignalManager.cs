@@ -35,4 +35,7 @@ public class GlobalSignalManager : MonoBehaviour
     }
 }
 
-public class GlobalSignal {}
+public class GlobalSignal { }
+public class CharacterHitGroundSignal : GlobalSignal { }
+public class CharacterLeftGroundSignal : GlobalSignal { }
+public class JumpButtonPressedSignal : GlobalSignal { }

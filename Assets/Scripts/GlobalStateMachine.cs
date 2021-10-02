@@ -14,7 +14,7 @@ public class GlobalStateMachine : MonoBehaviour
 
     public void Start()
     {
-        currentState = new StartMenuState();
+        currentState = new TutorialState();
     }
 
     // Update is called once per frame
@@ -40,7 +40,7 @@ public class GlobalState
     public virtual void End() { }
 }
 
-public class StartMenuState : GlobalState
+public class TutorialState : GlobalState
 {
     
 }
