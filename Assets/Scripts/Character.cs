@@ -22,6 +22,9 @@ public class Character : MonoBehaviour
     [SerializeField]
     private BoxCollider2D GroundCollider;
 
+    [SerializeField]
+    private Animator animator;
+
     private CharacterState currentState;
 
     // Start is called before the first frame update
@@ -56,6 +59,11 @@ public class Character : MonoBehaviour
     public void SetHorizontalVelocity(float input)
     {
         RigidBody.velocity = new Vector2(moveSpeed * input, RigidBody.velocity.y);
+    }
+
+    public void TriggerAnimation(string animation)
+    {
+        animator.SetTrigger(animation);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -94,7 +102,7 @@ public class StandState : CharacterState
 
     public override void Start()
     {
-        Debug.Log("STARTED STANDING");
+        character.TriggerAnimation("Idle");
         GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
     }
 
@@ -107,7 +115,6 @@ public class StandState : CharacterState
 
     public override void End()
     {
-        Debug.Log("FINISHED STANDING");
         GlobalSignalManager.Inst.RemoveListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
     }
 
@@ -122,13 +129,13 @@ public class FlyState : CharacterState
     private CharacterState nextState;
 
     public FlyState (Character character) : base (character)
-    {
+    { 
         nextState = this;
     }
 
     public override void Start()
     {
-        Debug.Log("STARTED FLYING");
+        character.TriggerAnimation("Jump");
         GlobalSignalManager.Inst.AddListener<CharacterHitGroundSignal>(onCharacterHitGround);
     }
 
@@ -141,7 +148,6 @@ public class FlyState : CharacterState
 
     public override void End()
     {
-        Debug.Log("FINISHED FLYING");
         GlobalSignalManager.Inst.RemoveListener<CharacterHitGroundSignal>(onCharacterHitGround);
     }
 
