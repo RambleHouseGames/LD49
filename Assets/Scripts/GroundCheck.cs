@@ -9,6 +9,11 @@ public class GroundCheck : MonoBehaviour
 
     private List<Collider2D> collidedColliders = new List<Collider2D>();
 
+    public bool IsGrounded()
+    {
+        return collidedColliders.Count > 0;
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.collider.tag == "ground" && !collidedColliders.Contains(collision.collider))
@@ -16,7 +21,9 @@ public class GroundCheck : MonoBehaviour
             bool isHit = collidedColliders.Count == 0;
             collidedColliders.Add(collision.collider);
             if (isHit)
-                GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
+            { 
+                GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal(collision.GetContact(0).point));
+            }
         }
     }
 

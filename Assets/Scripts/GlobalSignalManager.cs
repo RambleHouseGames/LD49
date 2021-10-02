@@ -37,7 +37,15 @@ public class GlobalSignalManager : MonoBehaviour
 }
 
 public class GlobalSignal { }
-public class CharacterHitGroundSignal : GlobalSignal { }
+public class CharacterHitGroundSignal : GlobalSignal
+{
+    public Vector2 point { get; private set; }
+
+    public CharacterHitGroundSignal(Vector2 point)
+    {
+        this.point = point;
+    }
+}
 public class CharacterLeftGroundSignal : GlobalSignal { }
 public class ThrowAnimationEndedSignal : GlobalSignal { }
 public class ThrowAnimationReleasePointSignal : GlobalSignal { }

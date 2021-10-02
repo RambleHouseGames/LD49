@@ -121,7 +121,9 @@ MonoBehaviour:
   KillCollider: {fileID: 8651260206813407264}
   PlatformCollider: {fileID: 1955880303309669196}
   rigidBody: {fileID: -7707133896110966408}
+  myAnimator: {fileID: 8651260206813407271}
   velocity: 10
+  stickDuration: 5
 --- !u!58 &8651260206813407264
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -148,7 +150,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.53}
@@ -179,9 +181,9 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
