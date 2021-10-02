@@ -28,6 +28,12 @@ public class Character : MonoBehaviour
     [SerializeField]
     private Animator animator;
 
+    [SerializeField]
+    private Shuriken shurikenPrefab;
+
+    [SerializeField]
+    private float shurikenSpawnOffset;
+
     private CharacterState currentState;
 
     // Start is called before the first frame update
@@ -74,19 +80,48 @@ public class Character : MonoBehaviour
     }
 
     public bool IsMovingHorizontally()
-    {
-        Debug.Log(rigidBody.velocity.x);
+    { 
         return Mathf.Abs(rigidBody.velocity.x) > .1f;
+    }
+
+    public void OnThrowAnimationReleasePoint()
+    {
+        GlobalSignalManager.Inst.FireSignal(new ThrowAnimationReleasePointSignal());
+    }
+
+    public void OnThrowAnimationEnded()
+    {
+        GlobalSignalManager.Inst.FireSignal(new ThrowAnimationEndedSignal());
+    }
+
+    public void SpawnShuriken()
+    {
+        if (renderer.flipX)
+        {
+            Debug.Log("flipped");
+            Vector3 spawnPosition = new Vector3(transform.position.x - shurikenSpawnOffset, transform.position.y, transform.position.z);
+            Shuriken newShuriken = Instantiate(shurikenPrefab, spawnPosition, Quaternion.identity);
+            newShuriken.GoLeft = true;
+        }
+        else
+        {
+            Debug.Log("Not Flipped");
+            Vector3 spawnPosition = new Vector3(transform.position.x + shurikenSpawnOffset, transform.position.y, transform.position.z);
+            Shuriken newShuriken = Instantiate(shurikenPrefab, spawnPosition, Quaternion.identity);
+            newShuriken.GoLeft = false;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
+        if(collision.collider.tag != "Shuriken")
+            GlobalSignalManager.Inst.FireSignal(new CharacterHitGroundSignal());
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        GlobalSignalManager.Inst.FireSignal(new CharacterLeftGroundSignal());
+        if (collision.collider.tag != "Shuriken")
+            GlobalSignalManager.Inst.FireSignal(new CharacterLeftGroundSignal());
     }
 }
 
@@ -124,6 +159,8 @@ public class StandState : CharacterState
         character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
         if (Input.GetButtonDown("Jump"))
             character.Jump();
+        if (Input.GetButtonDown("Fire1"))
+            nextState = new GroundedShurikenState(character);
         if (nextState == this && character.IsMovingHorizontally())
             nextState = new RunState(character);
 
@@ -160,6 +197,8 @@ public class FlyState : CharacterState
     {
         character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
         character.AccelerateByGravity();
+        if (Input.GetButtonDown("Fire1"))
+            nextState = new FlyingShurikenState(character);
         return nextState;
     }
 
@@ -190,7 +229,6 @@ public class RunState : CharacterState
     {
         character.TriggerAnimation("Run");
         GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
-
     }
 
     public override CharacterState Update()
@@ -198,6 +236,8 @@ public class RunState : CharacterState
         if (Input.GetButtonDown("Jump"))
             character.Jump();
         character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
+        if (Input.GetButtonDown("Fire1"))
+            nextState = new GroundedShurikenState(character);
         if (nextState == this && !character.IsMovingHorizontally())
             nextState = new StandState(character);
         return nextState;
@@ -212,5 +252,105 @@ public class RunState : CharacterState
     {
         nextState = new FlyState(character);
     }
+}
 
+public class GroundedShurikenState : CharacterState
+{
+    private CharacterState nextState;
+
+    public GroundedShurikenState(Character character) : base (character)
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        character.TriggerAnimation("Shuriken");
+        GlobalSignalManager.Inst.AddListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+        GlobalSignalManager.Inst.AddListener<ThrowAnimationEndedSignal>(onThrowAnimationEnded);
+        GlobalSignalManager.Inst.AddListener<ThrowAnimationReleasePointSignal>(onThrowAnimationReleasePoint);
+    }
+
+    public override CharacterState Update()
+    {
+        character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
+        if (Input.GetButtonDown("Jump"))
+            character.Jump();
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.RemoveListener<CharacterLeftGroundSignal>(onCharacterLeftGround);
+        GlobalSignalManager.Inst.RemoveListener<ThrowAnimationEndedSignal>(onThrowAnimationEnded);
+        GlobalSignalManager.Inst.RemoveListener<ThrowAnimationReleasePointSignal>(onThrowAnimationReleasePoint);
+    }
+
+    private void onCharacterLeftGround(GlobalSignal signal)
+    {
+        nextState = new FlyState(character);
+    }
+
+    private void onThrowAnimationReleasePoint(GlobalSignal signal)
+    {
+        character.SpawnShuriken();
+    }
+
+    private void onThrowAnimationEnded(GlobalSignal signal)
+    {
+        if (character.IsMovingHorizontally())
+            nextState = new RunState(character);
+        else
+            nextState = new StandState(character);
+    }
+}
+
+public class FlyingShurikenState : CharacterState
+{
+    private CharacterState nextState;
+
+    public FlyingShurikenState(Character character) : base (character)
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        character.TriggerAnimation("Shuriken");
+        GlobalSignalManager.Inst.AddListener<CharacterHitGroundSignal>(onCharacterHitGround);
+        GlobalSignalManager.Inst.AddListener<ThrowAnimationEndedSignal>(onThrowAnimationEnded);
+        GlobalSignalManager.Inst.AddListener<ThrowAnimationReleasePointSignal>(onThrowAnimationReleasePoint);
+    }
+
+    public override CharacterState Update()
+    {
+        character.SetHorizontalVelocity(Input.GetAxis("Horizontal"));
+        character.AccelerateByGravity();
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.RemoveListener<CharacterHitGroundSignal>(onCharacterHitGround);
+        GlobalSignalManager.Inst.RemoveListener<ThrowAnimationEndedSignal>(onThrowAnimationEnded);
+        GlobalSignalManager.Inst.RemoveListener<ThrowAnimationReleasePointSignal>(onThrowAnimationReleasePoint);
+    }
+
+    private void onCharacterHitGround(GlobalSignal signal)
+    {
+        if (character.IsMovingHorizontally())
+            nextState = new RunState(character);
+        else
+            nextState = new StandState(character);
+    }
+
+    private void onThrowAnimationReleasePoint(GlobalSignal signal)
+    {
+        character.SpawnShuriken();
+    }
+
+    private void onThrowAnimationEnded(GlobalSignal signal)
+    {
+        nextState = new FlyState(character);
+    }
 }
