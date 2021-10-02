@@ -31,7 +31,8 @@ public class GlobalSignalManager : MonoBehaviour
 
     public void FireSignal(GlobalSignal signal)
     {
-        listeners[signal.GetType()](signal);
+        if(listeners.ContainsKey(signal.GetType()))
+            listeners[signal.GetType()](signal);
     }
 }
 

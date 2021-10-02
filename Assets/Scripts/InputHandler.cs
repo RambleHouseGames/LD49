@@ -8,7 +8,7 @@ public class InputHandler : MonoBehaviour
     {
         if(Input.GetButtonDown("Jump"))
         {
-            GlobalSignalManager.Inst.FireSignal(new JumpButtonPressedSignal()) ;
+            GlobalSignalManager.Inst.FireSignal(new JumpButtonPressedSignal());
         }
     }
 }
