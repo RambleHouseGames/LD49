@@ -87,7 +87,9 @@ public class Shuriken : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Enemy")
-            Destroy(gameObject);
+        {
+            //Destroy(gameObject);
+        }
     }
 }
 

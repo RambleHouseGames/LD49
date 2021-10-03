@@ -149,6 +149,7 @@ public class Kitsune : MonoBehaviour
             if (collision.transform.position.x > transform.position.x)
                 deathVelocity = new Vector2(-deathVelocity.x, deathVelocity.y);
             amDead = true;
+            Destroy(collision.gameObject);
         }
     }
 }
