@@ -5663,7 +5663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba46fcb5a91374a0e89cd40acf6e4140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeCounterPrefab: {fileID: 0}
+  lifeCounterPrefab: {fileID: 7909558449478475915, guid: 14cae7f6b5b41433b8b41884d7d10b35, type: 3}
 --- !u!1 &2123756800
 GameObject:
   m_ObjectHideFlags: 0
