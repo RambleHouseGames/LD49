@@ -61,6 +61,8 @@ public class Shuriken : MonoBehaviour
         rigidBody.bodyType = RigidbodyType2D.Kinematic;
         gameObject.layer = 6;
         myAnimator.SetTrigger("Stick");
+        KillCollider.enabled = false;
+        PlatformCollider.enabled = true;
     }
 
     public void Break()
