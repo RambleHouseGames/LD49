@@ -854,6 +854,8 @@ MonoBehaviour:
   rows:
   - {fileID: 849155633}
   - {fileID: 1080225899}
+  - {fileID: 535048834}
+  - {fileID: 101437512}
 --- !u!4 &478772448
 Transform:
   m_ObjectHideFlags: 0
