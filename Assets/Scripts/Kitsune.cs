@@ -22,6 +22,9 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private LayerMask GroundAndCharacterLayerMask;
 
+    [SerializeField]
+    private Animator myAnimator;
+
     private int currentWaypoint = 0;
     private bool goingForward = true;
 
@@ -39,6 +42,8 @@ public class Kitsune : MonoBehaviour
             fireballTimer -= Time.deltaTime;
         else
         {
+            myAnimator.SetBool("FiringRight", false);
+            myAnimator.SetBool("FiringLeft", false);
             Collider2D rightCollider = ScanRight();
             Collider2D leftCollider = ScanLeft();
 
@@ -55,6 +60,7 @@ public class Kitsune : MonoBehaviour
 
     private void ThrowFireBallRight()
     {
+        myAnimator.SetBool("FiringRight", true);
         fireballTimer = fireballCooldown;
         Fireball newFireball = Instantiate(fireBallPrefab, eyeline.transform.position, Quaternion.identity);
         newFireball.goLeft = false;
@@ -62,6 +68,7 @@ public class Kitsune : MonoBehaviour
 
     private void ThrowFireBallLeft()
     {
+        myAnimator.SetBool("FiringLeft", true);
         fireballTimer = fireballCooldown;
         Fireball newFireball = Instantiate(fireBallPrefab, eyeline.transform.position, Quaternion.identity);
         newFireball.goLeft = true;
@@ -91,14 +98,18 @@ public class Kitsune : MonoBehaviour
                 }
             }
         }
-        if(Vector3.Distance(transform.position, waypoints[nextWayPoint].transform.position) < moveSpeed * Time.deltaTime)
+        if (Vector3.Distance(transform.position, waypoints[nextWayPoint].transform.position) < moveSpeed * Time.deltaTime)
         {
+            myAnimator.SetBool("Walking", false);
             transform.position = waypoints[nextWayPoint].transform.position;
             currentWaypoint = nextWayPoint;
             pauseTimer = waypoints[currentWaypoint].pauseDuration;
         }
         else
+        {
+            myAnimator.SetBool("Walking", true);
             transform.position = Vector3.MoveTowards(transform.position, waypoints[nextWayPoint].transform.position, moveSpeed * Time.deltaTime);
+        }
     }
 
     private Collider2D ScanRight()
