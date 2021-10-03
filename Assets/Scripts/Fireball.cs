@@ -18,4 +18,10 @@ public class Fireball : MonoBehaviour
             newX = transform.position.x - (moveSpeed * Time.deltaTime);
         transform.position = new Vector3(newX, transform.position.y, transform.position.z);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag != "Enemy")
+            Destroy(gameObject);
+    }
 }

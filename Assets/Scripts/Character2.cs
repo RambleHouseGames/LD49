@@ -11,6 +11,11 @@ public class Character2 : MonoBehaviour
     private float jumpSpeed = 10f;
 
     [SerializeField]
+    private float hitDelay = 1f;
+
+    private Vector2 hitVelocity = new Vector2(4f, 5f);
+
+    [SerializeField]
     private SpriteRenderer myRenderer;
 
     [SerializeField]
@@ -37,38 +42,46 @@ public class Character2 : MonoBehaviour
     [SerializeField]
     private bool amGrounded = false;
 
+    private float hitTimer = 0f;
+
     // Update is called once per frame
     void Update()
     {
-        Collider2D ground = GetGround();
-        if(amGrounded && ground == null)
+        if (hitTimer > 0f)
+            hitTimer -= Time.deltaTime;
+        else
         {
-            transform.SetParent(pagoda.transform);
-            amGrounded = false;
+
+            Collider2D ground = GetGround();
+            if (amGrounded && ground == null)
+            {
+                transform.SetParent(pagoda.transform);
+                amGrounded = false;
+            }
+            else if (!amGrounded && ground != null)
+            {
+                Transform newParent = ground.transform;
+                if (newParent.tag == "Shuriken")
+                    newParent = newParent.parent;
+                transform.SetParent(newParent);
+                amGrounded = true;
+            }
+
+            myRigidbody.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), myRigidbody.velocity.y);
+            if (amGrounded && Input.GetButtonDown("Jump"))
+                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpSpeed);
+
+            if (myRenderer.flipX && Input.GetAxis("Horizontal") > 0)
+                myRenderer.flipX = false;
+            else if (!myRenderer.flipX && Input.GetAxis("Horizontal") < 0)
+                myRenderer.flipX = true;
+
+            myAnimator.SetBool("Grounded", amGrounded);
+            myAnimator.SetBool("LateralMovement", Mathf.Abs(Input.GetAxis("Horizontal")) > .1f);
+
+            if (Input.GetButtonDown("Fire1"))
+                myAnimator.SetTrigger("Throw");
         }
-        else if(!amGrounded && ground != null)
-        {
-            Transform newParent = ground.transform;
-            if (newParent.tag == "Shuriken")
-                newParent = newParent.parent;
-            transform.SetParent(newParent);
-            amGrounded = true;
-        }
-
-        myRigidbody.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), myRigidbody.velocity.y);
-        if(amGrounded && Input.GetButtonDown("Jump"))
-            myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpSpeed);
-
-        if (myRenderer.flipX && Input.GetAxis("Horizontal") > 0)
-            myRenderer.flipX = false;
-        else if (!myRenderer.flipX && Input.GetAxis("Horizontal") < 0)
-            myRenderer.flipX = true;
-
-        myAnimator.SetBool("Grounded", amGrounded);
-        myAnimator.SetBool("LateralMovement", Mathf.Abs(Input.GetAxis("Horizontal")) > .1f);
-
-        if (Input.GetButtonDown("Fire1"))
-            myAnimator.SetTrigger("Throw");
     }
 
     public void OnThrowAnimationReleasePoint()
@@ -87,15 +100,16 @@ public class Character2 : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collision.collider.tag == "Fireball" || collision.collider.tag == "Enemy")
+        if (collider.tag == "Fireball" || collider.tag == "Enemy")
         {
+            hitTimer = hitDelay;
             myAnimator.SetTrigger("Hit");
-            if (collision.collider.transform.position.x < transform.position.x)
-                myRigidbody.velocity = new Vector2(jumpSpeed * .25f, jumpSpeed * .25f);
+            if (collider.transform.position.x < transform.position.x)
+                myRigidbody.velocity = new Vector2(hitVelocity.x, hitVelocity.y);
             else
-                myRigidbody.velocity = new Vector2(jumpSpeed * -.25f, jumpSpeed * .25f);
+                myRigidbody.velocity = new Vector2(-hitVelocity.x, hitVelocity.y);
         }
     }
 
