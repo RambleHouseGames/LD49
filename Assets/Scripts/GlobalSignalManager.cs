@@ -11,7 +11,10 @@ public class GlobalSignalManager : MonoBehaviour
 
     private void Awake()
     {
-        Inst = this;
+        if (Inst == null)
+            Inst = this;
+        else
+            Destroy(gameObject);
     }
 
     public void AddListener<T>(Action<GlobalSignal> callback) where T : GlobalSignal
@@ -49,3 +52,13 @@ public class CharacterHitGroundSignal : GlobalSignal
 public class CharacterLeftGroundSignal : GlobalSignal { }
 public class ThrowAnimationEndedSignal : GlobalSignal { }
 public class ThrowAnimationReleasePointSignal : GlobalSignal { }
+public class PlayerGotHitSignal : GlobalSignal
+{
+    public int remainingLives { get; private set; }
+
+    public PlayerGotHitSignal(int remainingLives)
+    {
+        this.remainingLives = remainingLives;
+    }
+}
+public class PlayerDiedSignal : GlobalSignal { }

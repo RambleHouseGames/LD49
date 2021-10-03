@@ -43,6 +43,14 @@ public class Character2 : MonoBehaviour
     private bool amGrounded = false;
 
     private float hitTimer = 0f;
+    private int remainingLives = 3;
+
+    private bool amDead = false;
+
+    private void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<PlayerDiedSignal>(onPlayerDied);
+    }
 
     // Update is called once per frame
     void Update()
@@ -84,6 +92,14 @@ public class Character2 : MonoBehaviour
         }
     }
 
+    private void onPlayerDied(GlobalSignal signal)
+    {
+        myAnimator.SetTrigger("Die");
+        myRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+        amDead = true;
+        transform.position = new Vector3(transform.position.x, transform.position.y, -3f);
+    }
+
     public void OnThrowAnimationReleasePoint()
     {
         if (myRenderer.flipX)
@@ -102,8 +118,19 @@ public class Character2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        if (amDead)
+            return;
+
         if (collider.tag == "Fireball" || collider.tag == "Enemy")
         {
+            if (hitTimer <= 0f)
+            {
+                remainingLives--;
+                GlobalSignalManager.Inst.FireSignal(new PlayerGotHitSignal(remainingLives));
+                if (remainingLives <= 0)
+                    GlobalSignalManager.Inst.FireSignal(new PlayerDiedSignal());
+            }
+
             hitTimer = hitDelay;
             myAnimator.SetTrigger("Hit");
             if (collider.transform.position.x < transform.position.x)
