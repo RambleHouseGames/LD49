@@ -216,9 +216,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 595754691654993845, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
   m_PrefabInstance: {fileID: 1149553145}
   m_PrefabAsset: {fileID: 0}
+--- !u!50 &66124654 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 595754691654993842, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+  m_PrefabInstance: {fileID: 1149553145}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &92712425 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 595754691654993845, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+  m_PrefabInstance: {fileID: 587423097}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &92712427 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 595754691654993842, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
   m_PrefabInstance: {fileID: 587423097}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &101437502
@@ -1430,6 +1440,10 @@ PrefabInstance:
       value: Kitsune
       objectReference: {fileID: 0}
     - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+      propertyPath: myRigidbody
+      value: 
+      objectReference: {fileID: 92712427}
+    - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
       propertyPath: waypoints.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -2297,6 +2311,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 999190346}
     m_Modifications:
+    - target: {fileID: 595754691654993843, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 595754691654993845, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -2345,6 +2363,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kitsune
       objectReference: {fileID: 0}
+    - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+      propertyPath: myRigidbody
+      value: 
+      objectReference: {fileID: 2027811331}
     - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
       propertyPath: waypoints.Array.data[0]
       value: 
@@ -2560,6 +2582,11 @@ AudioSource:
 --- !u!4 &973715475 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 595754691654993845, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+  m_PrefabInstance: {fileID: 1176682416}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &973715477 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 595754691654993842, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
   m_PrefabInstance: {fileID: 1176682416}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &999190346
@@ -3169,6 +3196,10 @@ PrefabInstance:
       value: Kitsune
       objectReference: {fileID: 0}
     - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+      propertyPath: myRigidbody
+      value: 
+      objectReference: {fileID: 66124654}
+    - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
       propertyPath: waypoints.Array.data[0]
       value: 
       objectReference: {fileID: 1657122640}
@@ -3375,6 +3406,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kitsune
       objectReference: {fileID: 0}
+    - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+      propertyPath: myRigidbody
+      value: 
+      objectReference: {fileID: 973715477}
     - target: {fileID: 595754691654993847, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
       propertyPath: waypoints.Array.size
       value: 2
@@ -4574,6 +4609,11 @@ SpriteRenderer:
 --- !u!4 &2027811329 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 595754691654993845, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
+  m_PrefabInstance: {fileID: 905677733}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &2027811331 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 595754691654993842, guid: 15e9a3c5b44df46629c97d48ef149b0f, type: 3}
   m_PrefabInstance: {fileID: 905677733}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2123756800

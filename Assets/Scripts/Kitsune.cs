@@ -13,8 +13,7 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 1f;
 
-    [SerializeField]
-    private float fireballCooldown = 3f;
+    private float fireballCooldown = 1f;
 
     [SerializeField]
     private GameObject eyeline;
@@ -25,11 +24,18 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private Animator myAnimator;
 
+    [SerializeField]
+    private Rigidbody2D myRigidbody;
+
     private int currentWaypoint = 0;
     private bool goingForward = true;
 
     private float pauseTimer = 0f;
     private float fireballTimer = 0f;
+
+    private bool amDead = false;
+    private float deathTimer = 100f;
+    private Vector2 deathVelocity = new Vector2(5f, 5f);
 
     private void Start()
     {
@@ -38,7 +44,17 @@ public class Kitsune : MonoBehaviour
 
     private void Update()
     {
-        if (fireballTimer > 0f)
+        if(amDead)
+        {
+            myRigidbody.constraints = RigidbodyConstraints2D.None;
+            transform.SetParent(null);
+            transform.position = new Vector3(transform.position.x + (deathVelocity.x * Time.deltaTime), transform.position.y + (deathVelocity.y * Time.deltaTime), -2f);
+            transform.Rotate(new Vector3(0f, 0f, 360f * Time.deltaTime));
+            deathTimer -= Time.deltaTime;
+            if (deathTimer < 0f)
+                Destroy(gameObject);
+        }
+        else if (fireballTimer > 0f)
             fireballTimer -= Time.deltaTime;
         else
         {
@@ -124,5 +140,15 @@ public class Kitsune : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(eyeline.transform.position, Vector2.left, 1000, GroundAndCharacterLayerMask);
         Debug.DrawRay(eyeline.transform.position, Vector2.left * 1000f, Color.red);
         return hit.collider;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Shuriken" && collision.GetType() == typeof(CircleCollider2D))
+        {
+            if (collision.transform.position.x > transform.position.x)
+                deathVelocity = new Vector2(-deathVelocity.x, deathVelocity.y);
+            amDead = true;
+        }
     }
 }

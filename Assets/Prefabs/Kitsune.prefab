@@ -105,7 +105,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   moveSpeed: 1
-  fireballCooldown: 3
+  fireballCooldown: 1
   eyeline: {fileID: 595754692119139390}
   GroundAndCharacterLayerMask:
     serializedVersion: 2
