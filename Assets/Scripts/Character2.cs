@@ -89,9 +89,14 @@ public class Character2 : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Hit");
-        if (collision.collider.tag == "Fireball")
+        if (collision.collider.tag == "Fireball" || collision.collider.tag == "Enemy")
+        {
             myAnimator.SetTrigger("Hit");
+            if (collision.collider.transform.position.x < transform.position.x)
+                myRigidbody.velocity = new Vector2(jumpSpeed * .25f, jumpSpeed * .25f);
+            else
+                myRigidbody.velocity = new Vector2(jumpSpeed * -.25f, jumpSpeed * .25f);
+        }
     }
 
     private Collider2D GetGround()
