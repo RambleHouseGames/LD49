@@ -47,7 +47,10 @@ public class Character2 : MonoBehaviour
         }
         else if(!amGrounded && ground != null)
         {
-            transform.SetParent(ground.transform);
+            Transform newParent = ground.transform;
+            while (ground.tag != "ground")
+                newParent = newParent.parent;
+            transform.SetParent(newParent);
             amGrounded = true;
         }
 
