@@ -78,7 +78,6 @@ public class Shuriken : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision");
         if(stickCallback != null)
             stickCallback(collision.collider);
     }
