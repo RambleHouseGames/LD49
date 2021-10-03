@@ -80,7 +80,7 @@ public class Shuriken : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(stickCallback != null)
+        if(collision.collider.gameObject.tag == "ground" && stickCallback != null)
             stickCallback(collision.collider);
     }
 }

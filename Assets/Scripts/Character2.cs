@@ -34,6 +34,7 @@ public class Character2 : MonoBehaviour
     [SerializeField]
     private GameObject pagoda;
 
+    [SerializeField]
     private bool amGrounded = false;
 
     // Update is called once per frame
@@ -48,7 +49,7 @@ public class Character2 : MonoBehaviour
         else if(!amGrounded && ground != null)
         {
             Transform newParent = ground.transform;
-            while (ground.tag != "ground")
+            if (newParent.tag == "Shuriken")
                 newParent = newParent.parent;
             transform.SetParent(newParent);
             amGrounded = true;
@@ -84,6 +85,13 @@ public class Character2 : MonoBehaviour
             Shuriken newShuriken = Instantiate(shurikenPrefab, spawnPosition, Quaternion.identity);
             newShuriken.GoLeft = false;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Hit");
+        if (collision.collider.tag == "Fireball")
+            myAnimator.SetTrigger("Hit");
     }
 
     private Collider2D GetGround()
