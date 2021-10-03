@@ -83,14 +83,6 @@ public class Shuriken : MonoBehaviour
         if((collision.collider.gameObject.tag == "ground" || collision.collider.gameObject.tag == "Shuriken")&& stickCallback != null)
             stickCallback(collision.collider);
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Enemy")
-        {
-            //Destroy(gameObject);
-        }
-    }
 }
 
 public abstract class ShurikenState

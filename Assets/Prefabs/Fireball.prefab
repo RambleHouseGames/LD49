@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2487738041840199328}
   - component: {fileID: 6283682041810318200}
   - component: {fileID: 6650418804084399333}
+  - component: {fileID: 2619779043551006390}
   m_Layer: 0
   m_Name: Fireball
   m_TagString: Fireball
@@ -46,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  myRenderer: {fileID: 6283682041810318200}
 --- !u!212 &6283682041810318200
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -113,3 +115,22 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.1
+--- !u!95 &2619779043551006390
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412069989828942997}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a78cdb3a416a14fafa2f54e0bc0d97b9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
