@@ -60,6 +60,15 @@ public class Kitsune : MonoBehaviour
         {
             currentState = FoxState.FLYING;
         }
+        if (stateStartedSignal.StartingState.GetType() == typeof(PlayState))
+        {
+            if (currentState == FoxState.FLYING || currentState == FoxState.WAITING)
+            {
+                transform.position = waypoints[currentWaypoint].transform.position;
+                currentState = FoxState.PATROLING;
+            }
+
+        }
     }
 
     private void Update()

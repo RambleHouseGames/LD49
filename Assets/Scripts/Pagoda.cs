@@ -32,6 +32,10 @@ public class Pagoda : MonoBehaviour
         {
             shouldWave = true;
         }
+        else if (stateStartedSignal.StartingState.GetType() == typeof(PlayState))
+        {
+            shouldWave = true;
+        }
     }
 
         private void Update()
