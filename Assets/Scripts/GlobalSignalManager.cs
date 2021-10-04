@@ -79,3 +79,5 @@ public class StateStartedSignal : GlobalSignal
 public class TextFinishedSignal : GlobalSignal { }
 public class CameraPanFinishedSignal : GlobalSignal { }
 public class BossFinishedJumpDownSignal : GlobalSignal { }
+public class BossFinishedSmashingSignal : GlobalSignal { }
+public class DeathAnimationFinishedSignal : GlobalSignal { }

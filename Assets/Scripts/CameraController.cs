@@ -46,6 +46,14 @@ public class CameraController : MonoBehaviour
         {
             targetY = enemyY;
         }
+        else if (stateStartedSignal.StartingState.GetType() == typeof(PanDownState))
+        {
+            targetY = startY;
+        }
+        else if (stateStartedSignal.StartingState.GetType() == typeof(PlayState))
+        {
+            isCutScene = false;
+        }
     }
 
     private void Update()

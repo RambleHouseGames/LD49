@@ -108,8 +108,7 @@ public class Character2 : MonoBehaviour
 
     public void OnDeathAnimationFinished()
     {
-        SceneManager.UnloadSceneAsync("MainScene");
-        SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Additive);
+        GlobalSignalManager.Inst.FireSignal(new DeathAnimationFinishedSignal());
     }
 
     private void onPlayerDied(GlobalSignal signal)
@@ -142,8 +141,17 @@ public class Character2 : MonoBehaviour
         }
         else if (startingState.GetType() == typeof(PanUpState))
         {
-            Debug.Log("Disabling Speach Bubble");
             speechBubble.SetVisible(false);
+        }
+        else if (startingState.GetType() == typeof(CatTalk3State))
+        {
+            speechBubble.SetVisible(true);
+            speechBubble.SetMessage("Not on my watch, Fox Dorks!!");
+        }
+        else if (startingState.GetType() == typeof(PlayState))
+        {
+            speechBubble.SetVisible(false);
+            isCutScene = false;
         }
     }
 

@@ -30,6 +30,11 @@ public class GlobalStateMachine : MonoBehaviour
             currentState.Start();
             GlobalSignalManager.Inst.FireSignal(new StateStartedSignal(currentState));
         }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log(currentState.GetType());
+        }
     }
 }
 
@@ -230,6 +235,188 @@ public class JumpDownState : GlobalState
 
     private void onBossFinishedJumpDown(GlobalSignal signal)
     {
-        Debug.Log("Boss Talk");
+        nextState = new BossTalk1State();
+    }
+}
+
+public class BossTalk1State : GlobalState
+{
+    private bool textFinished = false;
+    private GlobalState nextState;
+
+    public BossTalk1State()
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    public override GlobalState Update()
+    {
+        if (Input.GetButtonDown("Jump") && textFinished)
+            nextState = new BossTalk2State();
+
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    private void onTextFinished(GlobalSignal signal)
+    {
+        textFinished = true;
+    }
+}
+
+public class BossTalk2State : GlobalState
+{
+    private bool textFinished = false;
+    private GlobalState nextState;
+
+    public BossTalk2State()
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    public override GlobalState Update()
+    {
+        if (Input.GetButtonDown("Jump") && textFinished)
+            nextState = new SmashState();
+
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    private void onTextFinished(GlobalSignal signal)
+    {
+        textFinished = true;
+    }
+}
+
+public class SmashState : GlobalState
+{
+    private float smashTimer = 5f;
+
+    public override GlobalState Update()
+    {
+        smashTimer -= Time.deltaTime;
+        if (smashTimer < 0f)
+            return new PanDownState();
+        return this;
+    }
+}
+
+public class PanDownState : GlobalState
+{
+    private GlobalState nextState;
+
+    public PanDownState()
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<CameraPanFinishedSignal>(onCameraPanFinished);
+    }
+
+    public override GlobalState Update()
+    {
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.AddListener<CameraPanFinishedSignal>(onCameraPanFinished);
+    }
+
+    private void onCameraPanFinished(GlobalSignal signal)
+    {
+        nextState = new CatTalk3State();
+    }
+}
+
+public class CatTalk3State : GlobalState
+{
+    private bool textFinished = false;
+    private GlobalState nextState;
+
+    public CatTalk3State()
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    public override GlobalState Update()
+    {
+        if (Input.GetButtonDown("Jump") && textFinished)
+            nextState = new PlayState();
+
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.AddListener<TextFinishedSignal>(onTextFinished);
+    }
+
+    private void onTextFinished(GlobalSignal signal)
+    {
+        textFinished = true;
+    }
+}
+
+public class PlayState : GlobalState
+{
+    private GlobalState nextState;
+
+    public PlayState()
+    {
+        nextState = this;
+    }
+
+    public override void Start()
+    {
+        GlobalSignalManager.Inst.AddListener<DeathAnimationFinishedSignal>(onDeathAnimationFinished);
+    }
+
+    public override GlobalState Update()
+    {
+        return nextState;
+    }
+
+    public override void End()
+    {
+        GlobalSignalManager.Inst.RemoveListener<DeathAnimationFinishedSignal>(onDeathAnimationFinished);
+    }
+
+    private void onDeathAnimationFinished(GlobalSignal signal)
+    {
+        SceneManager.UnloadSceneAsync("MainScene");
+        SceneManager.sceneLoaded += onSceneLoaded;
+        SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Additive);
+    }
+
+    private void onSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        nextState = new PlayState();
     }
 }

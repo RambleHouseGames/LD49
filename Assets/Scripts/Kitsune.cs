@@ -13,6 +13,8 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 1f;
 
+    private float flySpeed = 10f;
+
     private float fireballCooldown = 1f;
 
     [SerializeField]
@@ -27,6 +29,9 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private Rigidbody2D myRigidbody;
 
+    [SerializeField]
+    private float flyOffset = 30f;
+
     private int currentWaypoint = 0;
     private bool goingForward = true;
 
@@ -37,40 +42,71 @@ public class Kitsune : MonoBehaviour
     private float deathTimer = 100f;
     private Vector2 deathVelocity = new Vector2(5f, 5f);
 
+    private FoxState currentState = FoxState.WAITING;
+
     private void Start()
     {
-        transform.position = waypoints[currentWaypoint].transform.position;
+        Vector3 firstWaypoint = waypoints[currentWaypoint].transform.position;
+        transform.position = new Vector3(firstWaypoint.x, firstWaypoint.y + flyOffset, firstWaypoint.z);
+        GlobalSignalManager.Inst.AddListener<StateStartedSignal>(onStateStarted);
+    }
+
+    private void onStateStarted(GlobalSignal signal)
+    {
+        StateStartedSignal stateStartedSignal = (StateStartedSignal)signal;
+        GlobalState startingState = stateStartedSignal.StartingState;
+
+        if (stateStartedSignal.StartingState.GetType() == typeof(SmashState))
+        {
+            currentState = FoxState.FLYING;
+        }
     }
 
     private void Update()
     {
-        if(amDead)
+        if (currentState == FoxState.WAITING)
+            return;
+        else if (currentState == FoxState.FLYING)
         {
-            myRigidbody.constraints = RigidbodyConstraints2D.None;
-            transform.SetParent(null);
-            transform.position = new Vector3(transform.position.x + (deathVelocity.x * Time.deltaTime), transform.position.y + (deathVelocity.y * Time.deltaTime), -2f);
-            transform.Rotate(new Vector3(0f, 0f, 360f * Time.deltaTime));
-            deathTimer -= Time.deltaTime;
-            if (deathTimer < 0f)
-                Destroy(gameObject);
+            float distance = Vector3.Distance(transform.position, waypoints[currentWaypoint].transform.position);
+            if (distance < flySpeed * Time.deltaTime)
+            {
+                transform.position = waypoints[currentWaypoint].transform.position;
+                currentState = FoxState.PATROLING;
+            }
+            else
+                transform.position = Vector3.MoveTowards(transform.position, waypoints[currentWaypoint].transform.position, flySpeed * Time.deltaTime);
         }
-        else if (fireballTimer > 0f)
-            fireballTimer -= Time.deltaTime;
         else
         {
-            myAnimator.SetBool("FiringRight", false);
-            myAnimator.SetBool("FiringLeft", false);
-            Collider2D rightCollider = ScanRight();
-            Collider2D leftCollider = ScanLeft();
-
-            if (rightCollider != null && rightCollider.tag == "Character")
-                ThrowFireBallRight();
-            else if (leftCollider != null && leftCollider.tag == "Character")
-                ThrowFireBallLeft();
-            else if (pauseTimer > 0)
-                pauseTimer -= Time.deltaTime;
+            if (amDead)
+            {
+                myRigidbody.constraints = RigidbodyConstraints2D.None;
+                transform.SetParent(null);
+                transform.position = new Vector3(transform.position.x + (deathVelocity.x * Time.deltaTime), transform.position.y + (deathVelocity.y * Time.deltaTime), -2f);
+                transform.Rotate(new Vector3(0f, 0f, 360f * Time.deltaTime));
+                deathTimer -= Time.deltaTime;
+                if (deathTimer < 0f)
+                    Destroy(gameObject);
+            }
+            else if (fireballTimer > 0f)
+                fireballTimer -= Time.deltaTime;
             else
-                MoveTowardNextWayPoint();
+            {
+                myAnimator.SetBool("FiringRight", false);
+                myAnimator.SetBool("FiringLeft", false);
+                Collider2D rightCollider = ScanRight();
+                Collider2D leftCollider = ScanLeft();
+
+                if (rightCollider != null && rightCollider.tag == "Character")
+                    ThrowFireBallRight();
+                else if (leftCollider != null && leftCollider.tag == "Character")
+                    ThrowFireBallLeft();
+                else if (pauseTimer > 0)
+                    pauseTimer -= Time.deltaTime;
+                else
+                    MoveTowardNextWayPoint();
+            }
         }
     }
 
@@ -153,3 +189,5 @@ public class Kitsune : MonoBehaviour
         }
     }
 }
+
+public enum FoxState { WAITING, FLYING, PATROLING}
