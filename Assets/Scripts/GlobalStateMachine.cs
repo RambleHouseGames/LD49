@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GlobalStateMachine : MonoBehaviour
 {
@@ -14,7 +15,8 @@ public class GlobalStateMachine : MonoBehaviour
 
     public void Start()
     {
-        currentState = new TutorialState();
+        currentState = new MenuState();
+        currentState.Start();
     }
 
     // Update is called once per frame
@@ -40,7 +42,10 @@ public class GlobalState
     public virtual void End() { }
 }
 
-public class TutorialState : GlobalState
+public class MenuState : GlobalState
 {
-    
+    public override void Start()
+    {
+        SceneManager.LoadSceneAsync("MenuScene", LoadSceneMode.Additive);
+    }
 }

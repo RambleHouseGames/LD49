@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Character2 : MonoBehaviour
 {
@@ -52,6 +53,11 @@ public class Character2 : MonoBehaviour
         GlobalSignalManager.Inst.AddListener<PlayerDiedSignal>(onPlayerDied);
     }
 
+    private void OnDestroy()
+    {
+        GlobalSignalManager.Inst.RemoveListener<PlayerDiedSignal>(onPlayerDied);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -92,12 +98,19 @@ public class Character2 : MonoBehaviour
         }
     }
 
+    public void OnDeathAnimationFinished()
+    {
+        SceneManager.UnloadSceneAsync("MainScene");
+        SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Additive);
+    }
+
     private void onPlayerDied(GlobalSignal signal)
     {
         myAnimator.SetTrigger("Die");
         myRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
         amDead = true;
-        transform.position = new Vector3(transform.position.x, transform.position.y, -3f);
+        transform.SetParent(null);
+        transform.position = new Vector3(transform.position.x, transform.position.y, -5f);
     }
 
     public void OnThrowAnimationReleasePoint()

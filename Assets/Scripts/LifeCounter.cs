@@ -17,6 +17,11 @@ public class LifeCounter : MonoBehaviour
         GlobalSignalManager.Inst.AddListener<PlayerGotHitSignal>(onPlayerGotHit);
     }
 
+    private void OnDestroy()
+    {
+        GlobalSignalManager.Inst.RemoveListener<PlayerGotHitSignal>(onPlayerGotHit);
+    }
+
     private void onPlayerGotHit(GlobalSignal signal)
     {
         PlayerGotHitSignal playerGotHitSignal = (PlayerGotHitSignal)signal;

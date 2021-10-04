@@ -62,3 +62,5 @@ public class PlayerGotHitSignal : GlobalSignal
     }
 }
 public class PlayerDiedSignal : GlobalSignal { }
+public class FinishedFadeOutSignal : GlobalSignal { }
+public class FinishedFadeInSignal : GlobalSignal { }
