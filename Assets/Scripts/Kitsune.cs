@@ -13,7 +13,7 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 1f;
 
-    private float flySpeed = 10f;
+    private float flySpeed = 20f;
 
     private float fireballCooldown = 1f;
 
@@ -29,8 +29,7 @@ public class Kitsune : MonoBehaviour
     [SerializeField]
     private Rigidbody2D myRigidbody;
 
-    [SerializeField]
-    private float flyOffset = 30f;
+    private float flyOffset = 60f;
 
     private int currentWaypoint = 0;
     private bool goingForward = true;
