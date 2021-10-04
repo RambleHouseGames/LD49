@@ -53,8 +53,7 @@ public class Menu : MonoBehaviour
                 showCredits = true;
             else
             {
-                SceneManager.UnloadSceneAsync("MenuScene");
-                SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Additive);
+                GlobalSignalManager.Inst.FireSignal(new StartButtonPressedSignal());
             }
         }
     }

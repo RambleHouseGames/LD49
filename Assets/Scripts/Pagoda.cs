@@ -16,10 +16,12 @@ public class Pagoda : MonoBehaviour
     private float waveProgress = -5f;
     private float waveAmplitude = 1f;
     private float waveSpeed = 1f;
+    private bool shouldWave = false;
 
     private void Update()
     {
-        waveProgress += Time.deltaTime * waveSpeed;
+        if(shouldWave)
+            waveProgress += Time.deltaTime * waveSpeed;
         for (int i = 0; i < rows.Count; i++)
         {
             float offset = waveProgress - (i / waveAmplitude);

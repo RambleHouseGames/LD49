@@ -64,3 +64,18 @@ public class PlayerGotHitSignal : GlobalSignal
 public class PlayerDiedSignal : GlobalSignal { }
 public class FinishedFadeOutSignal : GlobalSignal { }
 public class FinishedFadeInSignal : GlobalSignal { }
+public class StartButtonPressedSignal : GlobalSignal { }
+public class StateStartedSignal : GlobalSignal
+{
+    public GlobalState StartingState { get; private set; }
+
+    public StateStartedSignal(GlobalState startingState)
+    {
+        this.StartingState = startingState;
+    }
+
+}
+
+public class TextFinishedSignal : GlobalSignal { }
+public class CameraPanFinishedSignal : GlobalSignal { }
+public class BossFinishedJumpDownSignal : GlobalSignal { }

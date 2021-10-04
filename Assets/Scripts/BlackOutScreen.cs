@@ -12,6 +12,11 @@ public class BlackOutScreen : MonoBehaviour
 
     private bool blackOut = false;
 
+    private void Awake()
+    {
+        myRenderer.enabled = true;
+    }
+
     private void Start()
     {
         GlobalSignalManager.Inst.AddListener<PlayerDiedSignal>(onPlayerDied);

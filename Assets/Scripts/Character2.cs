@@ -35,6 +35,9 @@ public class Character2 : MonoBehaviour
     private Shuriken shurikenPrefab;
 
     [SerializeField]
+    private SpeechBubble speechBubble;
+
+    [SerializeField]
     private float shurikenSpawnOffset = 1f;
 
     [SerializeField]
@@ -47,15 +50,18 @@ public class Character2 : MonoBehaviour
     private int remainingLives = 3;
 
     private bool amDead = false;
+    private bool isCutScene = true;
 
     private void Start()
     {
         GlobalSignalManager.Inst.AddListener<PlayerDiedSignal>(onPlayerDied);
+        GlobalSignalManager.Inst.AddListener<StateStartedSignal>(onStateStarted);
     }
 
     private void OnDestroy()
     {
         GlobalSignalManager.Inst.RemoveListener<PlayerDiedSignal>(onPlayerDied);
+        GlobalSignalManager.Inst.RemoveListener<StateStartedSignal>(onStateStarted);
     }
 
     // Update is called once per frame
@@ -81,20 +87,22 @@ public class Character2 : MonoBehaviour
                 amGrounded = true;
             }
 
-            myRigidbody.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), myRigidbody.velocity.y);
-            if (amGrounded && Input.GetButtonDown("Jump"))
-                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpSpeed);
+            if (!isCutScene)
+            {
+                myRigidbody.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), myRigidbody.velocity.y);
+                if (amGrounded && Input.GetButtonDown("Jump"))
+                    myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpSpeed);
 
-            if (myRenderer.flipX && Input.GetAxis("Horizontal") > 0)
-                myRenderer.flipX = false;
-            else if (!myRenderer.flipX && Input.GetAxis("Horizontal") < 0)
-                myRenderer.flipX = true;
+                if (myRenderer.flipX && Input.GetAxis("Horizontal") > 0)
+                    myRenderer.flipX = false;
+                else if (!myRenderer.flipX && Input.GetAxis("Horizontal") < 0)
+                    myRenderer.flipX = true;
 
+                if (Input.GetButtonDown("Fire1"))
+                    myAnimator.SetTrigger("Throw");
+                myAnimator.SetBool("LateralMovement", Mathf.Abs(Input.GetAxis("Horizontal")) > .1f);
+            }
             myAnimator.SetBool("Grounded", amGrounded);
-            myAnimator.SetBool("LateralMovement", Mathf.Abs(Input.GetAxis("Horizontal")) > .1f);
-
-            if (Input.GetButtonDown("Fire1"))
-                myAnimator.SetTrigger("Throw");
         }
     }
 
@@ -111,6 +119,32 @@ public class Character2 : MonoBehaviour
         amDead = true;
         transform.SetParent(null);
         transform.position = new Vector3(transform.position.x, transform.position.y, -5f);
+    }
+
+    private void onStateStarted(GlobalSignal signal)
+    {
+        StateStartedSignal stateStartedSignal = (StateStartedSignal)signal;
+        GlobalState startingState = stateStartedSignal.StartingState;
+
+        if (stateStartedSignal.StartingState.GetType() == typeof(IntroState))
+        {
+            isCutScene = true;
+        }
+        else if (startingState.GetType() == typeof(CatTalk1State))
+        {
+            speechBubble.SetVisible(true);
+            speechBubble.SetMessage("Wow, I can't believe I finally get to visit the Nyanja Pagoda!!");
+        }
+        else if (startingState.GetType() == typeof(CatTalk2State))
+        {
+            speechBubble.SetVisible(true);
+            speechBubble.SetMessage("I've Wanted To come here since I was just a kitten");
+        }
+        else if (startingState.GetType() == typeof(PanUpState))
+        {
+            Debug.Log("Disabling Speach Bubble");
+            speechBubble.SetVisible(false);
+        }
     }
 
     public void OnThrowAnimationReleasePoint()
